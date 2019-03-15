@@ -1,10 +1,14 @@
 package com.example.assignment02;
 
+import android.app.ActionBar;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,36 +26,36 @@ public class MainActivity extends AppCompatActivity {
             game = (Game) savedInstanceState.getSerializable("game");
             getbuttonLayOut();
         }
-
     }
 
-    public void getbuttonLayOut(){
-        TileState state;
-        for(int i = 0; i < button_total.length; i++) {
-            for(int j = 0; j < button_total.length; j++) {
-                state = game.getTileState(i, j);
-                Button button = findViewById(button_total[i][j]);
-                if (state == TileState.CROSS) {
-                    button.setText("X");
-                }
-                else if (state == TileState.CIRCLE) {
-                    button.setText("O");
-                }
-            }
-        }
-    }
-
-    // This function will store the game in a bundle
+    // Method to save the state
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("game", game);
     }
 
+    // Method that returns the layout when a tile is clicked
+    public void getbuttonLayOut(){
+        TileState state;
+        for(int i = 0; i < button_total.length; i++) {
+            for(int j = 0; j < button_total.length; j++) {
+                state = game.getTileState(i, j);
+                ImageButton imagebutton = findViewById(button_total[i][j]);
+                if (state == TileState.CROSS) {
+                    imagebutton.setImageResource(getResources().getIdentifier("cross", "drawable", getPackageName()));
+                }
+                else if (state == TileState.CIRCLE) {
+                    imagebutton.setImageResource(getResources().getIdentifier("circle", "drawable", getPackageName()));
+                }
+            }
+        }
+    }
 
+    // Method that processes tile clicks
     public void tileClicked(View view) {
         Log.d("tictactoe", "tileClicked");
-        Button button = (Button) view;
+        ImageButton button = (ImageButton) view;
 
         // Translate clicked button ID into coordinates
         int id = view.getId();
@@ -96,51 +100,18 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-//        switch (id) {
-//            case R.id.button_one:
-//                row = findViewById(R.id.button_one).getLeft();
-//                column = findViewById(R.id.button_one).getTop();
-//                break;
-//            case R.id.button_two:
-//                row = findViewById(R.id.button_two).getLeft();
-//                column = findViewById(R.id.button_two).getTop();
-//                break;
-//            case R.id.button_three:
-//                row = findViewById(R.id.button_three).getLeft();
-//                column = findViewById(R.id.button_three).getTop();
-//                break;
-//            case R.id.button_four:
-//                row = findViewById(R.id.button_four).getLeft();
-//                column = findViewById(R.id.button_four).getTop();
-//                break;
-//            case R.id.button_five:
-//                row = findViewById(R.id.button_five).getLeft();
-//                column = findViewById(R.id.button_five).getTop();
-//                break;
-//            case R.id.button_six:
-//                row = findViewById(R.id.button_six).getLeft();
-//                column = findViewById(R.id.button_six).getTop();
-//                break;
-//            case R.id.button_seven:
-//                row = findViewById(R.id.button_seven).getLeft();
-//                column = findViewById(R.id.button_seven).getTop();
-//                break;
-//            case R.id.button_eight:
-//                row = findViewById(R.id.button_eight).getLeft();
-//                column = findViewById(R.id.button_eight).getTop();
-//                break;
-//            case R.id.button_nine:
-//                row = findViewById(R.id.button_nine).getLeft();
-//                column = findViewById(R.id.button_nine).getTop();
-//                break;
-//        }
-
             // Feed coordinates to Game choose method
             TileState state = game.choose(row, column);
 
+            // EXTRA IDEA FOR IMPROVING PROJECT
+            // Show how many moves have been played
+            TextView movesplayed = (TextView) findViewById(R.id.movesplayed);
+            movesplayed.setText("Moves Played: " + game.movesPlayed);
+
+            // Update the selected button with a picture of cross or circle
             switch (state){
                 case CROSS:
-                    button.setText("X");
+                    button.setImageResource(getResources().getIdentifier("cross", "drawable", getPackageName()));
                     findViewById(R.id.INVALID).setVisibility(View.INVISIBLE);
                     // Check if the game has been won
                     if (game.won() == GameState.PLAYER_ONE) {
@@ -148,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case CIRCLE:
-                    button.setText("O");
+                    button.setImageResource(getResources().getIdentifier("circle", "drawable", getPackageName()));
                     findViewById(R.id.INVALID).setVisibility(View.INVISIBLE);
                     // Check if the game has been won
                     if (game.won() == GameState.PLAYER_TWO) {
@@ -163,11 +134,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (game.won() == GameState.DRAW) {
-                findViewById(R.id.PLAYER_DRAW).setVisibility(View.VISIBLE);
+                findViewById(R.id.DRAW).setVisibility(View.VISIBLE);
             }
 
         }
-
 
     public void resetClicked(View view) {
         // Reset user interface

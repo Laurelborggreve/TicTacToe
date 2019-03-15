@@ -12,7 +12,7 @@ public class Game implements Serializable {
     public int movesPlayed;
     public Boolean gameOver;
 
-    // Initialize the board, the state of the game and the player's turn
+    // Method to initialize the board, the state of the game and the player's turn
     public Game() {
         board = new TileState[BOARD_SIZE][BOARD_SIZE];
         for(int i= 0; i<BOARD_SIZE; i++)
@@ -24,6 +24,8 @@ public class Game implements Serializable {
          movesPlayed = 0;
     }
 
+    // Method that ensures that the current user can choose any unused place to place
+    // their square or circle
     public TileState choose(int row, int column){
         TileState tile = board[row][column];
         if (tile == TileState.BLANK) {
@@ -45,14 +47,10 @@ public class Game implements Serializable {
         }
     }
 
-    // The won function to check whether the game has a winner. If the game has a winner,
+    // Method to check whether the game has a winner. If the game has a winner,
     // it will return the winner. Otherwise it will return a tie.
     public GameState won(){
-        if (movesPlayed < 9) {
-            System.out.print("The game is not finished yet");
-            return GameState.IN_PROGRESS;
-        }
-        else if (board[0][0] == TileState.CROSS && board[1][1] == TileState.CROSS && board[2][2] == TileState.CROSS) {
+        if (board[0][0] == TileState.CROSS && board[1][1] == TileState.CROSS && board[2][2] == TileState.CROSS) {
                 gameOver = true;
                 return GameState.PLAYER_ONE;
             }
@@ -64,7 +62,6 @@ public class Game implements Serializable {
                 gameOver = true;
                 return GameState.PLAYER_ONE;
             }
-
         else if (board[2][0] == TileState.CROSS && board[2][1] == TileState.CROSS && board[2][2] == TileState.CROSS) {
                 gameOver = true;
                 return GameState.PLAYER_ONE;
@@ -117,14 +114,20 @@ public class Game implements Serializable {
                 gameOver = true;
                 return GameState.PLAYER_TWO;
             }
-        else {
+        else if (movesPlayed < 9) {
+            return GameState.IN_PROGRESS;
+        }
+        else if (movesPlayed > 8) {
                 System.out.print("It's a tie! \n");
                 gameOver = true;
                 return GameState.DRAW;
             }
+        else {
+            return GameState.IN_PROGRESS;
         }
+    }
 
-    // The getState function returns the current state of each tile
+    // Method that returns the current state of each tile
     public TileState getTileState(int row, int column){
         return board[row][column];
     }
